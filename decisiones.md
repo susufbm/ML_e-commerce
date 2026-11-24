@@ -43,7 +43,7 @@ Lecturas provisionales:
 ### Fase 1: EDA (CERRADA)
 **Entregables de la fase:** `Practica1_Notebook_acumulado.ipynb` (Parte 1, 129 comprobaciones de cifras: 129 OK), `memoria_fase1_EDA.md` (versión corregida), figuras 01–08 en `fig_eda/`.
 
-**Entorno.** Colab: pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1, scipy 1.16.3, matplotlib 3.10.0.
+**Entorno.** Colab del alumno: pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1, scipy 1.16.3, matplotlib 3.10.0. Entorno de Claude: pandas 3.0.6, numpy 2.5.4, scikit-learn 1.9.1, scipy 1.18.1, matplotlib 3.11.2. Los resultados coinciden salvo en el AUC adversario (tercer decimal).
 
 **Hechos medidos**
 - Precio: asimetría 2,88; con log 0,37; curtosis 19,29. Percentiles: p50 139,8; p95 298,7; p99 427,9.
@@ -76,7 +76,7 @@ Lecturas provisionales:
 
 ### Fase 2: Preprocesado (CERRADA)
 **Entregables:** Fase2_Preprocesado.ipynb (Parte 2), memoria_fase2_preprocesado.md, figuras 09-10 (fig_prep/).
-**Entorno de referencia:** Colab (pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1). HGB difiere ~0,1 € en otras versiones de sklearn (por ejemplo, 1.9.1); el lineal coincide. F2.2 ejecutado dos veces en Colab: idéntico.
+**Entorno de referencia:** Colab del alumno (pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1). HGB difiere ~0,1 € en otras versiones de sklearn (en el entorno de Claude, 1.9.1); el lineal coincide. F2.2 ejecutado dos veces en Colab: idéntico.
 **Decisiones**
 - Validación: KFold aleatorio 5x3, random_state=42, congelado en SPLITS. CV de control con random_state=2026, solo para confirmar, no para elegir.
 - Conjunto de trabajo (punto de partida): sin material, brand_tier, is_promo ni country (empates; se elige lo simple). Quedan category, brand, season, channel + 6 numéricas. Reabrir en fase 5 con hiperparámetros ajustados (HGB reducido: +0,073 y +0,058 en las dos semillas; pista, no evidencia).

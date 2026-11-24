@@ -11,6 +11,7 @@ Práctica 1 de Ingeniería del Conocimiento (UCAM, curso 2026-27): modelo de reg
 | `notebooks/Fase1_EDA_Colab.ipynb` | Fase 1: análisis exploratorio |
 | `notebooks/Practica1_Parte2_Preprocesado.ipynb` | Fase 2: esquema de validación y preprocesado |
 | `decisiones.md` | Bitácora: lo decidido, lo descartado y lo medido en cada fase |
+| `contexto.md` | Instrucciones y reglas metodológicas que se le dan al asistente de IA (Claude) al empezar cada chat |
 | `docs/enunciado_practica1.pdf` | Enunciado de la práctica |
 
 ## Evaluación
@@ -35,7 +36,8 @@ Referencia actual en validación cruzada (5 folds x 3 repeticiones, semilla 42):
 ## Cómo trabajar
 
 1. Antes de empezar, leer `decisiones.md`: no se repite nada que ya esté decidido o descartado ahí.
-2. Los notebooks están pensados para Google Colab: abrirlos, subir los dos CSV de `data/` cuando lo pidan y ejecutar de arriba abajo.
-3. Todas las pruebas usan las mismas particiones (KFold 5x3, `random_state=42`). Una mejora solo cuenta si supera la desviación entre folds.
-4. Al cerrar una fase, actualizar `decisiones.md` en el mismo commit que el notebook.
-5. Cada cambio en una rama propia y con pull request, para no pisar el trabajo de otro.
+2. Si se trabaja con un asistente de IA, pegarle `contexto.md` como instrucciones y adjuntarle `decisiones.md`, para que todos partamos de las mismas reglas.
+3. Los notebooks están pensados para Google Colab: abrirlos, subir los dos CSV de `data/` cuando lo pidan y ejecutar de arriba abajo.
+4. Todas las pruebas usan las mismas particiones (KFold 5x3, `random_state=42`). Una mejora solo cuenta si supera la desviación entre folds.
+5. Al cerrar una fase, actualizar `decisiones.md` en el mismo commit que el notebook.
+6. Cada cambio en una rama propia y con pull request, para no pisar el trabajo de otro.
