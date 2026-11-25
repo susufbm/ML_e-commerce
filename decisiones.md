@@ -133,7 +133,7 @@ Lecturas provisionales:
 **Pendiente de la Fase 2 no reabierto:** conjunto completo de variables (material, brand_tier, is_promo, country) y categóricas nativas.
 
 ### Fase 6: Submission y validación (EN CURSO, `Fase4_Tuning_y_Prediccion.ipynb`, F4.5)
-- Modelo final entrenado con las 8.000 filas → `submission_MatteoConcio.csv` (no se sube al repo).
+- Modelo final entrenado con las 8.000 filas → `submissions/submission_MatteoConcio.csv`.
 - Comprobaciones superadas: columnas `id`, `prediction`; 2.000 filas; id únicos e iguales a los de test-1.csv; sin NaN ni no finitos; todas > 0.
 - Predicciones del test: media 158,68 (train 158,00), mediana 147,80 (139,82), mín 51,86, máx 568,02 (train 1.238,25). Figura 13.
 - Pendiente: comprobación única en https://ic2526p1.streamlit.app/ y anotar aquí el RMSE obtenido.
