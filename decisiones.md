@@ -94,17 +94,49 @@ Lecturas provisionales:
 - Conjunto reducido frente a ref: lineal -0,009 ± 0,060; HGB +0,073 ± 0,391 (control: +0,018 ± 0,073 y +0,058 ± 0,376). Empate.
 **Pendiente:** log(weight_kg) para que el log funcione en el lineal (fase 4); medir log + Duan OOF con otra semilla (fase 5); reabrir conjunto completo y categóricas nativas con hiperparámetros ajustados (fase 5).
 
-### Fase 3: Línea base y comparación de modelos
--
+> **Nota de numeración.** Los notebooks de Matteo agrupan las fases de esta bitácora: `Fase3_Modelado.ipynb` cubre las fases 3 y 4 (ingeniería de variables + comparación de modelos) y `Fase4_Tuning_y_Prediccion.ipynb` cubre las fases 5 y 6 (ajuste, mezcla, CV de control y fichero de entrega). Ambos ejecutados en Colab (pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1) con las particiones congeladas (huella `0589e8baabcf`). Cifras: media ± std de 15 folds; diferencias emparejadas frente a la referencia lineal de la Fase 2 (54,054).
 
-### Fase 4: Ingeniería de variables
--
+### Fase 3: Línea base y comparación de modelos (CERRADA, `Fase3_Modelado.ipynb`, F3.3–F3.4)
+**Medido (hiperparámetros por defecto, variables de la Fase 4)**
+| Modelo | RMSE | dif. vs ref | Veredicto |
+|---|---|---|---|
+| Ridge sobre log(precio) + splines + Duan OOF | 52,383 ± 4,875 | -1,671 ± 0,752 (15/15) | MEJORA |
+| GradientBoosting log + Duan | 53,765 ± 4,908 | -0,289 ± 0,840 (11/15) | EMPATE |
+| Lineal ref Fase 2 (euros) | 54,054 ± 5,046 | — | referencia |
+| HGB log + Duan | 54,083 ± 4,781 | +0,029 ± 0,881 | EMPATE |
+| HGB euros (Fase 2) | 54,697 ± 4,677 | +0,643 ± 0,890 | EMPATE |
+| RandomForest log + Duan | 55,132 ± 5,128 | +1,078 ± 0,755 | EMPEORA |
+- GBR frente al Ridge con splines: +1,383 ± 0,580, 0/15 folds mejor → EMPEORA.
+**Decisión:** finalistas para el ajuste: Ridge log + splines y GradientBoosting log + Duan. Figura 12.
+**No probado:** LightGBM, XGBoost, CatBoost, ExtraTrees.
 
-### Fase 5: Ajuste de hiperparámetros y conjunto final
--
+### Fase 4: Ingeniería de variables (CERRADA, `Fase3_Modelado.ipynb`, F3.1–F3.2)
+**Hechos medidos**
+- Forma del efecto del peso (residuo de log(precio) sin el peso, 20 tramos): plano en pesos bajos frente a log(peso); casi recta frente a log(1+peso). Correlación del residuo: peso 0,522; log(peso) 0,549; raíz(peso) 0,564; log(1+peso) 0,566. Figura 11.
+- Pasos en el lineal sobre log(precio) con Duan OOF (frente a la ref.): peso crudo 101,565 (EMPEORA, confirma F2.3); log(peso) 54,073 (EMPATE); log(1+peso) 52,945 (-1,109 ± 0,696, MEJORA); + log(1+reviews) 52,656 (-1,398 ± 0,696); + splines cúbicas 5 nodos con Ridge alpha=1: 52,383 (-1,671 ± 0,752).
+- Aporte de cada paso frente al anterior: log→log1p del peso -1,129 ± 0,766 (14/15); + log1p(reviews) -0,288 ± 0,236 (12/15); + splines -0,273 ± 0,258 (13/15).
+**Decisiones**
+- Variables finales: category, brand, season, channel (one-hot) + log(1+weight_kg), rating, log(1+reviews), shipping_cost, margin, discount. Transformaciones fila a fila (sin fuga).
+- Objetivo del lineal: log(precio) con corrección de Duan sobre residuos OOF (CV interna de 5 folds dentro de cada fold).
+**No probado:** shipping_cost/weight_kg, interacción category × brand_tier.
 
-### Fase 6: Submission y validación
--
+### Fase 5: Ajuste de hiperparámetros y conjunto final (CERRADA, `Fase4_Tuning_y_Prediccion.ipynb`, F4.1–F4.4)
+**Medido**
+- Ridge: rejilla nodos {4,5,6,8} × alpha {0,01; 0,1; 1; 10; 100}, 15 folds. Rango 52,374–52,631; mejor nodos=5, alpha=0,01: 52,374 ± 4,913 (-1,680 ± 0,756 vs ref, 15/15). Prácticamente igual que alpha=1 (52,383): la rejilla es plana.
+- GradientBoosting: búsqueda aleatoria de 15 combinaciones en la primera repetición (Duan in-sample), n_estimators=1500 con parada temprana. Confirmadas con 15 folds y Duan OOF: lr=0,1, depth=1, min_samples_leaf=5, subsample=0,7 → 52,779 ± 4,933; lr=0,05, depth=2, leaf=20, subsample=0,7, max_features=0,5 → 52,820 ± 4,776; por defecto 53,765.
+- Mezcla w·Ridge + (1-w)·GBR sobre predicciones OOF: mejor w=0,9, dif -0,001 ± 0,032 frente al Ridge → no supera el criterio.
+- CV de control (semilla 2026, huella `4156694060de`): ref 53,987 ± 6,408; final 52,317 ± 6,479; dif -1,670 ± 0,621 (15/15) → la mejora se confirma.
+**Decisiones**
+- Modelo final: Ridge (alpha=0,01) sobre log(precio), splines cúbicas de 5 nodos en las numéricas, Duan OOF. RMSE CV 52,374 (control 52,317), MAE 33,385, R² 0,5545.
+- Sin mezcla (empate: se elige lo simple).
+**Descartado:** mezcla Ridge + GBR; GBR ajustado como modelo final (52,779, peor que el Ridge).
+**Pendiente de la Fase 2 no reabierto:** conjunto completo de variables (material, brand_tier, is_promo, country) y categóricas nativas.
+
+### Fase 6: Submission y validación (EN CURSO, `Fase4_Tuning_y_Prediccion.ipynb`, F4.5)
+- Modelo final entrenado con las 8.000 filas → `submission_MatteoConcio.csv` (no se sube al repo).
+- Comprobaciones superadas: columnas `id`, `prediction`; 2.000 filas; id únicos e iguales a los de test-1.csv; sin NaN ni no finitos; todas > 0.
+- Predicciones del test: media 158,68 (train 158,00), mediana 147,80 (139,82), mín 51,86, máx 568,02 (train 1.238,25). Figura 13.
+- Pendiente: comprobación única en https://ic2526p1.streamlit.app/ y anotar aquí el RMSE obtenido.
 
 ### Fase 7: Notebook final y guion del vídeo
 -
