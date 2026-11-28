@@ -12,6 +12,7 @@ Práctica 1 de Ingeniería del Conocimiento (UCAM, curso 2026-27): modelo de reg
 | `notebooks/Practica1_Parte2_Preprocesado.ipynb` | Fase 2: esquema de validación y preprocesado |
 | `notebooks/Fase3_Modelado.ipynb` | Fases 3 y 4: ingeniería de variables y comparación de modelos |
 | `notebooks/Fase4_Tuning_y_Prediccion.ipynb` | Fases 5 y 6: ajuste de hiperparámetros, mezcla, CV de control y fichero de entrega |
+| `notebooks/Fase5_Ensamblados_y_boosters.ipynb` | Ampliación de la fase 5: boosters (LightGBM, XGBoost, CatBoost), SVM y modelos ensamblados |
 | `submissions/submission_MatteoConcio.csv` | Predicciones del test con el modelo final (columnas `id`, `prediction`) |
 | `decisiones.md` | Bitácora: lo decidido, lo descartado y lo medido en cada fase |
 | `contexto.md` | Instrucciones y reglas metodológicas que se le dan al asistente de IA (Claude) al empezar cada chat |
@@ -36,7 +37,7 @@ Práctica 1 de Ingeniería del Conocimiento (UCAM, curso 2026-27): modelo de reg
 
 Modelo final actual (validación cruzada 5 folds x 3 repeticiones, semilla 42): Ridge sobre log(precio) con splines y corrección de Duan, RMSE 52,37 ± 4,91 (CV de control con semilla 2026: 52,32). Referencia de la Fase 2: regresión lineal 54,05.
 
-Los notebooks de las fases 3 y 4 leen `train-1.csv` y `test-1.csv` de su misma carpeta (`RUTA_DATOS = ''`); en Colab basta con subir los dos CSV.
+Los notebooks `Fase3`, `Fase4` y `Fase5` leen `train-1.csv` y `test-1.csv` de su misma carpeta (`RUTA_DATOS = ''`); en Colab basta con subir los dos CSV. El de ensamblados necesita además `pip install catboost`.
 
 ## Cómo trabajar
 

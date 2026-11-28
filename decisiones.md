@@ -108,7 +108,7 @@ Lecturas provisionales:
 | RandomForest log + Duan | 55,132 ± 5,128 | +1,078 ± 0,755 | EMPEORA |
 - GBR frente al Ridge con splines: +1,383 ± 0,580, 0/15 folds mejor → EMPEORA.
 **Decisión:** finalistas para el ajuste: Ridge log + splines y GradientBoosting log + Duan. Figura 12.
-**No probado:** LightGBM, XGBoost, CatBoost, ExtraTrees.
+**No probado:** ExtraTrees. (LightGBM, XGBoost y CatBoost, medidos en la ampliación de la Fase 5.)
 
 ### Fase 4: Ingeniería de variables (CERRADA, `Fase3_Modelado.ipynb`, F3.1–F3.2)
 **Hechos medidos**
@@ -118,7 +118,7 @@ Lecturas provisionales:
 **Decisiones**
 - Variables finales: category, brand, season, channel (one-hot) + log(1+weight_kg), rating, log(1+reviews), shipping_cost, margin, discount. Transformaciones fila a fila (sin fuga).
 - Objetivo del lineal: log(precio) con corrección de Duan sobre residuos OOF (CV interna de 5 folds dentro de cada fold).
-**No probado:** shipping_cost/weight_kg, interacción category × brand_tier.
+**Medido después (ampliación de la Fase 5):** shipping_cost/weight_kg e interacción category × brand_tier, ambos EMPATE.
 
 ### Fase 5: Ajuste de hiperparámetros y conjunto final (CERRADA, `Fase4_Tuning_y_Prediccion.ipynb`, F4.1–F4.4)
 **Medido**
@@ -130,7 +130,19 @@ Lecturas provisionales:
 - Modelo final: Ridge (alpha=0,01) sobre log(precio), splines cúbicas de 5 nodos en las numéricas, Duan OOF. RMSE CV 52,374 (control 52,317), MAE 33,385, R² 0,5545.
 - Sin mezcla (empate: se elige lo simple).
 **Descartado:** mezcla Ridge + GBR; GBR ajustado como modelo final (52,779, peor que el Ridge).
-**Pendiente de la Fase 2 no reabierto:** conjunto completo de variables (material, brand_tier, is_promo, country) y categóricas nativas.
+**Pendiente de la Fase 2:** conjunto completo de variables, reabierto en la ampliación (EMPATE); categóricas nativas, sin reabrir.
+
+**Ampliación: boosters, SVM y ensamblados (`Fase5_Ensamblados_y_boosters.ipynb`, E.1–E.6)**
+Indicación del profesor: probar modelos ensamblados (mezcla de predicciones con pesos) y modelos no vistos en clase. Mismas particiones (huella `0589e8baabcf`) y variables finales; todo sobre log(precio) con Duan OOF. Boosters y SVM con hiperparámetros fijados a mano, sin búsqueda. Entorno: scikit-learn 1.9.1, LightGBM 4.7.0, XGBoost 3.4.1, CatBoost 1.2.10. Diferencias emparejadas frente al modelo final (52,374).
+- Variables (E.1): conjunto completo (material, brand_tier, country, is_promo) -0,044 ± 0,098 (10/15); log(1 + shipping_cost/weight_kg) +0,021 ± 0,034; category × brand_tier +0,097 ± 0,121; category × brand +0,154 ± 0,211. EMPATE en todas.
+- Individuales (E.2): CatBoost 52,863 (+0,489 ± 0,402, 2/15); LightGBM 4 hojas 53,115 (+0,741 ± 0,548, 1/15); XGBoost 53,128 (+0,754 ± 0,461, 1/15); HGB profundidad 2: 53,139 (+0,764 ± 0,387, 0/15); LightGBM por defecto 54,109 (+1,735 ± 0,429); SVM RBF C=0,3: 54,709 (+2,334 ± 0,978); SVM RBF C=1: 55,924 (+3,550 ± 0,905). Todos EMPEORAN.
+- Correlación de errores con el modelo final (E.3, repetición 1): boosters 0,983–0,991; SVM C=0,3: 0,958; RandomForest 0,952. Los modelos fallan en los mismos productos. Figura 14.
+- Mezcla con pesos fijos 80/20, final + otro (E.4): GBR +0,008 ± 0,066; CatBoost +0,013 ± 0,073; LightGBM +0,023 ± 0,108; SVM +0,088 ± 0,168; RF +0,128 ± 0,180. EMPATE en todas. Al 50/50 con SVM (+0,582 ± 0,430) o RF (+0,723 ± 0,433): EMPEORA.
+- Mezcla con pesos aprendidos fuera del fold, NNLS con suma 1 (E.5): final + GBR +0,004 ± 0,030; final + SVM +0,021 ± 0,031; final + RF +0,008 ± 0,019; 10 modelos +0,039 ± 0,053. EMPATE. Peso medio del modelo final entre 0,85 y 0,99.
+- Sin el modelo final (E.6) la mezcla sí ayuda entre modelos parejos: RF + SVM 54,283 frente a 54,709 del mejor componente (-0,426 ± 0,342), pero queda a +1,908 del modelo final.
+**Decisión:** el modelo final y el fichero de entrega no cambian. Ensamblado descartado con datos.
+**Descartado:** LightGBM, XGBoost, CatBoost, HGB y SVM como modelo final; mezclas de pesos fijos y aprendidos; conjunto completo de variables; ratio envío/peso; interacciones de categoría con marca y tier.
+**No probado:** búsqueda de hiperparámetros de boosters y SVM; stacking con metamodelo no lineal; mezcla en escala logarítmica; categóricas nativas.
 
 ### Fase 6: Submission y validación (EN CURSO, `Fase4_Tuning_y_Prediccion.ipynb`, F4.5)
 - Modelo final entrenado con las 8.000 filas → `submissions/submission_MatteoConcio.csv`.
